@@ -10,6 +10,7 @@ namespace Northwind.Interface
 {
     public interface IGenericService<T,TDto> where T : IEntityBase where TDto : IDtoBase
     {
+        //IEnumerable ile IQueryable farkı IQueryable veri tabanında işlemi yapar, IEnumerable ram'de işlemi yapar.
         //Listeleme
         IResponse<List<TDto>> GetAll();
         //Filtreli Listeleme

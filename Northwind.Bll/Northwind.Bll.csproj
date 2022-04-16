@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Northwind.Entity\Northwind.Entity.csproj" />
+    <ProjectReference Include="..\Northwind.Interface\Northwind.Interface.csproj" />
   </ItemGroup>
 
 </Project>
