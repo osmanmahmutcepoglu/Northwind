@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Northwind.Dal.Concrete.Entityframework.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
-    {
+    { 
         #region Variables
         DbContext context;
         IDbContextTransaction transaction;

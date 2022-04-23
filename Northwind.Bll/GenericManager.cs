@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿ using Microsoft.Extensions.DependencyInjection;
 using Northwind.Dal.Abstract;
 using Northwind.Entity.Base;
 using Northwind.Entity.IBase;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Northwind.Bll
 {
     public class GenericManager<T, TDto> : IGenericService<T, TDto> where T : EntityBase where TDto : DtoBase
-    {
+    { 
         //UnitOfWork
         //IServiceProvider
         //GenericRepository
