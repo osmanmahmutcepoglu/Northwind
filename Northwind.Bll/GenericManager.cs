@@ -1,4 +1,5 @@
-﻿ using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Northwind.Dal.Abstract;
 using Northwind.Entity.Base;
 using Northwind.Entity.IBase;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace Northwind.Bll
 {
     public class GenericManager<T, TDto> : IGenericService<T, TDto> where T : EntityBase where TDto : DtoBase
-    { 
+    {
         //UnitOfWork
         //IServiceProvider
         //GenericRepository
@@ -38,7 +39,36 @@ namespace Northwind.Bll
         #region Methods
         public IResponse<TDto> Add(TDto item, bool saveChanges = true)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //dto verisi model(T) tipine dönüştürülüyor.
+                //sebebi:dal T ile çalışır.
+                var model = ObjectMapper.Mapper.Map<T>(item);
+                // var resolvesResult = String.Join(',', model.GetType().GetProperties().Select(x => $" - {x.Name} : {x.GetValue(model) ?? ""} - "));
+                var result = repository.Add(model);
+
+                if (saveChanges)
+                {
+                    Save(); //kaydetme işlemi olduğundan transaction'ı commit'liyoruz.
+                }
+                //dönüş tipini ayarlıyoruz
+                return new Response<TDto>
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Success",
+                    Data = ObjectMapper.Mapper.Map<T, TDto>(result)
+                };
+            }
+            catch (Exception ex)
+            {
+                //hata olma durumunda dönecek veri seti
+                return new Response<TDto>
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = $"Error:{ex.Message}",
+                    Data = null
+                };
+            }
         }
 
         public Task<IResponse<TDto>> AddAsync(TDto item, bool saveChanges = true)
@@ -48,7 +78,28 @@ namespace Northwind.Bll
 
         public IResponse<bool> DeleteById(int id, bool saveChanges = true)
         {
-            throw new NotImplementedException();
+            try
+            {
+                repository.Delete(id);
+                if (saveChanges)
+                {
+                    Save();
+                }
+                return new Response<bool>
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Success",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<bool>
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message= $"Error:{ex.Message}",
+                };
+            }
         }
 
         public Task<IResponse<TDto>> DeleteByIdAsync(int id, bool saveChanges = true)
@@ -74,6 +125,11 @@ namespace Northwind.Bll
         public IQueryable<TDto> GetQueryable()
         {
             throw new NotImplementedException();
+        }
+
+        public void Save()
+        {
+            unitOfWork.SaveChanges();
         }
 
         public IResponse<TDto> Update(TDto item, bool saveChanges = true)
