@@ -23,14 +23,10 @@ namespace Northwind.Interface
         Task<IResponse<TDto>> AddAsync(TDto item, bool saveChanges = true);
         //Güncelleme
         IResponse<TDto> Update(TDto item, bool saveChanges = true);
-        //Async Güncelleme
-        Task<IResponse<TDto>> UpdateAsync(TDto item, bool saveChanges = true);
         //Silme
         IResponse<bool> DeleteById(int id, bool saveChanges = true);
-        //Async Silme
-        Task<IResponse<TDto>> DeleteByIdAsync(int id, bool saveChanges = true);
         //Queryable Listeleme
-        IQueryable<TDto> GetQueryable();
+        IResponse<IQueryable<TDto>> GetQueryable();
         //Kaydet
         void Save();
     }
