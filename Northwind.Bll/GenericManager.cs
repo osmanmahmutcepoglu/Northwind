@@ -1,4 +1,6 @@
-﻿using Northwind.Entity.Base;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Northwind.Dal.Abstract;
+using Northwind.Entity.Base;
 using Northwind.Entity.IBase;
 using Northwind.Interface;
 using System;
@@ -8,6 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Northwind.Bll
 {
     public class GenericManager<T, TDto> : IGenericService<T, TDto> where T : EntityBase where TDto : DtoBase
@@ -16,6 +19,23 @@ namespace Northwind.Bll
         //IServiceProvider
         //GenericRepository
         //Constructor
+
+        #region Variables
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IServiceProvider service;
+        private readonly IGenericRepository<T> repository;
+        #endregion
+
+        #region Constructor
+        public GenericManager(IServiceProvider service)
+        {
+            this.service = service;
+            unitOfWork = service.GetService<IUnitOfWork>();
+            repository = unitOfWork.GetRepository<T>();
+        }
+        #endregion
+
+        #region Methods
         public IResponse<TDto> Add(TDto item, bool saveChanges = true)
         {
             throw new NotImplementedException();
@@ -65,5 +85,6 @@ namespace Northwind.Bll
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

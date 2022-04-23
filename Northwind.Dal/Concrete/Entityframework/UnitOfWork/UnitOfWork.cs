@@ -39,9 +39,21 @@ namespace Northwind.Dal.Concrete.Entityframework.UnitOfWork
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this); //Garbage Collector çalıştırır. (Ram'da ki çöpleri temizler)
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!dispose)
+            {
+                if (disposing)
+                {
+                    context.Dispose();
+                }
+            }
+            dispose = true;
+        }
         public IGenericRepository<T> GetRepository<T>() where T : EntityBase
         {
             return new GenericRepository<T>(context);
@@ -63,7 +75,25 @@ namespace Northwind.Dal.Concrete.Entityframework.UnitOfWork
 
         public int SaveChanges()
         {
-            throw new NotImplementedException();
+            var _transaction = transaction != null ? transaction : context.Database.BeginTransaction();
+            using (_transaction)
+            {
+                try
+                {
+                    if (context == null)
+                    {
+                        throw new ArgumentException("Context is null");
+                    }
+                    int result = context.SaveChanges();
+                    _transaction.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Error on save changes", ex);
+                }
+            }
         }
     }
 }
