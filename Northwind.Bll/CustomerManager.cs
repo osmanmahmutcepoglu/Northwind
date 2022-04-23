@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Northwind.Dal.Abstract;
 using Northwind.Entity.Base;
 using Northwind.Entity.Dto;
@@ -13,12 +14,13 @@ using System.Threading.Tasks;
 
 namespace Northwind.Bll
 {
-    public class CustomerManager<T, TDto> : GenericManager<Customer, DtoCustomer>, ICustomerService
+    public class CustomerManager: GenericManager<Customer, DtoCustomer>, ICustomerService
     {
         public readonly ICustomerRepository customerRepository;
 
         public CustomerManager(IServiceProvider service) : base(service)
         {
+            customerRepository = service.GetService<ICustomerRepository>();
         }
 
         public IResponse<IQueryable<DtoCustomer>> GetTotalReport()

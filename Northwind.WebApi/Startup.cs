@@ -1,11 +1,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Northwind.Bll;
+using Northwind.Dal.Abstract;
+using Northwind.Dal.Concrete.Entityframework.Context;
+using Northwind.Dal.Concrete.Entityframework.Repository;
+using Northwind.Dal.Concrete.Entityframework.UnitOfWork;
+using Northwind.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +32,26 @@ namespace Northwind.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            #region JwtTokenService
+            #endregion
+
+            #region ApplicationContext
+            services.AddDbContext<NORTHWNDContext>();
+            services.AddScoped<DbContext,NORTHWNDContext>();
+            #endregion
+
+            #region ServiceSection
+            services.AddScoped<ICustomerService, CustomerManager>();
+            #endregion
+
+            #region RepositorySection
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            #endregion
+
+            #region UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #endregion
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
